@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <script src="phaser.min.js"></script>
+</head>
+<body>
+<script>
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+
+function preload() {
+
+    game.load.image('bullet', 'assets/dude.png');
+    game.load.image('grass', 'assets/grass.png');
+    game.load.audio('sfx', 'assets/meow1.ogg');
+}
+
+var cat;
+var obstacle;
+var cursors;
+var cats;
+var obstacles;
+var fx;
+var pause_btn;
+
+/**
+ * Determination determines how many things a cat can endure.
+ */
+function Cat(type, determination) {
+   var width = game.world.width + Math.random() * 200;
+   var height = (game.world.height / 2) + Math.random() * 200;
+   console.log("Placing new cat at " + width + " " + height);
+
+   this.sprite = game.add.sprite(width, height, 'dude');
+   this.type = type;
+   this.determination = determination;
+
+   game.physics.arcade.enable(this.sprite);
+   this.sprite.body.onCollide = new Phaser.Signal();
+   this.sprite.body.onCollide.add(function(me, other) {
+     console.log("Hit " + other.type);
+     fx.play();
+     me.destroy();
+
+     <!-- return new Cat('lol', 5); -->
+   }, this);
+   cats.add(this.sprite);
+
+   this.sprite.body.velocity.x = -100;
+}
+
+/**
+ * One durability can withstand one determination from a cat
+ */
+function Obstacle(type, durability) {
+   var width = (game.world.width / 2) + Math.random() * 200;
+   var height = (game.world.height / 2) + Math.random() * 200;
+
+   this.sprite = game.add.sprite(width, height, 'grass');
+   this.type = type;
+   this.durability = durability;
+
+   game.physics.arcade.enable(this.sprite);
+   this.sprite.body.immovable = true;
+   obstacles.add(this.sprite);
+}
+
+/**
+ * It'd be nice if the grid would creat a list of lanes and some min/max
+ * heights for each lane.
+ */
+function Grid() {
+
+}
+
+function create() {
+    fx = game.add.audio('sfx');
+
+    cats = game.add.group();
+    obstacles = game.add.group();
+
+    // Lol this doesn't follow the game_paused state
+    setInterval(function() {
+      return new Cat('lol', 10);
+    }, 1000);
+    obstacle = new Obstacle('thing', 10);
+
+    cursors = this.input.keyboard.createCursorKeys();
+    fireButton = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+
+    pause_btn = this.input.keyboard.addKey(27);
+    pause_btn.onDown.add(togglePause, this);
+}
+
+function update() {
+   obstacle.sprite.body.velocity.y = 0;
+
+    if (cursors.down.isDown) {
+       obstacle.sprite.body.velocity.y = 100;
+    } else if (cursors.up.isDown) {
+       obstacle.sprite.body.velocity.y = -100;
+    }
+
+    game.physics.arcade.collide(cats, obstacles);
+}
+
+function togglePause() {
+   game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
+}
+
+
+function render() {}
+</script>
+
+</body>
+</html>
