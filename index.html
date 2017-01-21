@@ -11,51 +11,8 @@
     </style>
 </head>
 <body>
+<script type="text/javascript" src="js/main.js"></script>
 
-<script type="text/javascript">
-
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
-
-function preload() {
-    game.load.image('bg0', 'assets/basic-bg.png');
-    game.load.spritesheet('heart-beat', 'assets/heart-sprite.png', 100, 100);
-    game.load.image('cat', 'assets/cat.png');
-    game.load.spritesheet('catwalk1', 'assets/catwalk1.png', 100, 100); 
-}
-
-function create() {
-    points = 0;
-    
-    game.add.sprite(0,0, 'bg0');
-
-    heart = game.add.sprite(500, game.height - 75, 'heart-beat');
-    heart.animations.add('beating', [0, 1], 1.5, true, true);
-    heart.scale.setTo(.5,.5);
-    
-    cat =   game.add.sprite(700, 300, 'catwalk1');
-    cat.animations.add('left', [0, 1], 2, true, true);
-
-    cat.scale.setTo(.75,.75);
-
-    points = 1;
-    
-    pointsText = game.add.text(game.width - 200, game.height - 70,
-        points);
-}
-
-function update() {
-    cat.animations.play('left');
-    heart.animations.play('beating');
-    cat.x -= 2;
-    if(cat.x < 200) {
-        cat.y = 200 + game.rnd.realInRange(20, 80);
-        cat.x = 800;
-        points += 10;
-        pointsText.text = points;
-    }
-}
-
-</script>
 
 </body>
 </html>
