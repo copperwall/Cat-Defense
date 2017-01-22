@@ -8,8 +8,9 @@ function preload() {
     game.load.image('yarn', 'assets/yarn.jpg');
 
     game.load.spritesheet('heart-beat', 'assets/heart-sprite.png', 100, 100);
-    game.load.spritesheet('cat', 'assets/catwalk1.png', 100, 100);
-
+    game.load.spritesheet('garfield-cat', 'assets/catssets/garfield-sprite.png', 100, 100);
+    game.load.spritesheet('marie-cat', 'assets/catssets/marie-sprite.png', 100, 100);
+    game.load.spritesheet('mimi-cat', 'assets/catssets/mimi-sprite.png', 100, 100);
 }
 
 function create() {
@@ -27,8 +28,12 @@ function create() {
 
     lanes = new Lanes(3, 650, 50);
 
-    p = spawnPos(lanes, 0, 'cat');
-    cat = new Cat(p);
+
+    cats = game.add.group();
+    var type = 'garfield-cat';
+    var level = 100;
+    p = spawnPos(lanes, 0, type);
+    cat = new Cat(p, type, level);
     console.log(p);
 
     pointsText = game.add.text(game.width - 200, game.height - 70,
@@ -38,9 +43,9 @@ function create() {
 function update() {
     cat.animations.play('left');
     heart.animations.play('beating');
-    cat.x -= 2;
+
     if(cat.x < 200) {
-        s = spawnPos(lanes, 0, 'cat');
+        s = spawnPos(lanes, 0, cat.catProperties.type);
         cat.x = s.x;
         cat.y = s.y;
         points += 10;
@@ -111,9 +116,27 @@ function spawnPos(lanes, laneNum, imageName) {
         #. Speed 4 + #, HP 4 + #
 */
 function Cat(spawn, type, level) {
-    var cat = game.add.sprite(spawn.x, spawn.y, 'cat');
+    var cat = game.add.sprite(spawn.x, spawn.y, type);
     cat.animations.add('left', [0, 1], 2, true, true);
     cat.scale.setTo(.75,.75);
+
+    // Add cat to physics
+    game.physics.arcade.enable(cat);
+
+    // Add onCollide handlers
+    cat.body.onCollide = new Phaser.Signal();
+    cat.body.onCollide.add(function(me, other) {
+      console.log("I hit ", other);
+    }, game);
+
+    cat.catProperties = {
+      type: type,
+      level: level
+    }
+
+    // TODO: Set this based on cat type and level.
+    cat.body.velocity.x = -100;
+    cats.add(cat);
 
     return cat;
 }
