@@ -8,13 +8,13 @@ function preload() {
     game.load.image('yarn', 'assets/yarn.jpg');
 
     game.load.spritesheet('heart-beat', 'assets/heart-sprite.png', 100, 100);
-    game.load.spritesheet('cat', 'assets/catwalk1.png', 100, 100); 
+    game.load.spritesheet('cat', 'assets/catwalk1.png', 100, 100);
 
 }
 
 function create() {
     points = 0;
-    
+
     room = game.add.sprite(0, 0, 'room');
     room.width = 800;
     room.height = 600;
@@ -22,17 +22,17 @@ function create() {
     heart = game.add.sprite(500, game.height - 75, 'heart-beat');
     heart.animations.add('beating', [0, 1], 1.5, true, true);
     heart.scale.setTo(.5,.5);
-    
-    points = 1;
-    
-    lanes = Lanes(3, 650, 50);
 
-    cat = Cat(game.width, game.height);
+    points = 1;
+
+    lanes = new Lanes(3, 650, 50);
+
+    cat = new Cat(game.width, game.height);
     p = spawnPos(lanes, 0, cat);
     console.log(p);
     cat.x = p.x;
     cat.y = p.y;
-    
+
     pointsText = game.add.text(game.width - 200, game.height - 70,
         points);
 }
@@ -56,9 +56,9 @@ function update() {
     Returns a group
 */
 function Lanes(numLanes, laneWidth, laneHeight) {
-    lanes = game.add.group();
+    var lanes = game.add.group();
     for(var i = 0; i < numLanes; i++) {
-        lanes.add(Lane());
+        lanes.add(new Lane());
     }
 
     lanes.setAll('width', laneWidth);
@@ -74,12 +74,12 @@ function Lanes(numLanes, laneWidth, laneHeight) {
     This returns a lane sprite
 */
 function Lane() {
-    lane = game.add.sprite(game.width, game.height, 'rug');
+    var lane = game.add.sprite(game.width, game.height, 'rug');
     return lane;
 }
 
 function spawnPos(lanes, laneNum, spawned) {
-    lane = lanes.getAt(0);
+    var lane = lanes.getAt(0);
     return new Phaser.Point(lane.x + lane.width,
         lane.y + game.rnd.realInRange(0,10) + lanes.y
         - spawned.height);
@@ -104,12 +104,9 @@ function spawnPos(lanes, laneNum, spawned) {
         #. Speed 4 + #, HP 4 + #
 */
 function Cat(spawn) {
-
-    cat = game.add.sprite(spawn.x, spawn.y, 'cat');
+    var cat = game.add.sprite(spawn.x, spawn.y, 'cat');
     cat.animations.add('left', [0, 1], 2, true, true);
     cat.scale.setTo(.75,.75);
 
     return cat;
 }
-
-
