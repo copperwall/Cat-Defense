@@ -37,7 +37,7 @@ GameState.prototype.update = function() {
     if (this.catGroup.countLiving() < this.MAX_CATS) {
         // Set the launch point to a random location past the right edge
         // of the stage
-        var newcat = this.launchCat(this.game.width - 100, 
+        var newcat = this.launchCat(this.game.width - 100,
 			this.game.rnd.integerInRange(50, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
@@ -79,6 +79,23 @@ var Cat = function (game, x, y) {
     this.animations.add('left', [0, 1], 2, true, true);
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
+
+    this.body.onCollide = new Phaser.Signal();
+    this.body.onCollide.add(function(me, other) {
+      // TODO:
+      // When a cat collides with an obstacle, that obstacle should lose one
+      // hit point and the cat should lose one hit point.
+      //
+      // This can probably be done with sprite health things. If the health
+      // gets to zero, either the obstacle or the cat is kill.
+      //
+      // If the cat is alive after a collision it should try to move again. If
+      // the obstacle is alive again, it'll collide again. This repeats until
+      // one or both dies.
+      //
+      // If the cat survives and obstacle dies, the cat should begin moving
+      // back to the target.
+    });
 }
 
 Cat.prototype = Object.create(Phaser.Sprite.prototype);
