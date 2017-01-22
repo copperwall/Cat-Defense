@@ -1,5 +1,6 @@
 var GameState = function(game) {
         this.MAX_CATS = 3; // number of cats
+        this.MAX_YARN = 3;
         this.catsLeft = 5;
 };
 
@@ -158,16 +159,19 @@ Cat.prototype.update = function() {
 */
 
 GameState.prototype.placeObstacle = function (t) {
-    console.log(t.x, t.y);
-    x = t.x;
-    y = t.y;
+    var x = t.x;
+    var y = t.y;
     // Get the first dead cat from the catGroup :'(
     var obstacle = this.obstacleGroup.getFirstDead();
 
     // If there aren't any available, create a new one
     if (obstacle === null) {
-        obstacle = new Obstacle(this.game);
-        this.obstacleGroup.add(obstacle);
+      if (this.obstacleGroup.length < this.MAX_YARN) {
+         obstacle = new Obstacle(this.game);
+         this.obstacleGroup.add(obstacle);
+      } else {
+         return;
+      }
     }
 
     // Revive the cat (set it's alive property to true)
