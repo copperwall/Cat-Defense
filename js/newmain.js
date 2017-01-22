@@ -17,8 +17,8 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('whitey', 'assets/cats/whitey-sprite.png', 100, 100);
 
     // Audio!
-    this.game.load.audio('theme', 'assets/theme.ogg');
-    this.game.load.audio('meow', 'assets/meow.ogg');
+    this.game.load.audio('theme', 'assets/audio/theme.ogg');
+    this.game.load.audio('meow', 'assets/audio/meow.ogg');
 
     // Background!
     this.game.load.image('background', 'assets/background.jpg');
