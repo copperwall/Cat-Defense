@@ -1,13 +1,16 @@
-var GameState = function(game) {
+var CatDefense = {};
+
+CatDefense.GameState = function(game) {
         this.MAX_CATS = 5; // number of cats
         this.MAX_YARN = 2;
         this.catsLeft = 15;
+        this.health = 3;
 };
 
-GameState.prototype.preload = function() {
+CatDefense.GameState.prototype.preload = function() {
     this.game.load.image('tile', 'assets/env/tile.png');
     this.game.load.image('room', 'assets/env/room.png');
-    this.game.load.spritesheet('heart', 'assets/env/heart-sprite.png');
+    this.game.load.spritesheet('heart', 'assets/env/heart-sprite.png', 100, 100);
 
     // Load items assets
     this.game.load.image('yarn', 'assets/items/yarn.png');
@@ -21,12 +24,13 @@ GameState.prototype.preload = function() {
     // Audio!
     this.game.load.audio('theme', 'assets/audio/theme.ogg');
     this.game.load.audio('meow', 'assets/audio/meow.ogg');
+    this.game.load.audio('trill', 'assets/audio/trill.ogg');
 
     // Background!
     this.game.load.image('background', 'assets/background.jpg');
 };
 
-GameState.prototype.create = function() {
+CatDefense.GameState.prototype.create = function() {
     // Set stage background
     this.game.add.image(0, 0, 'background');
 
@@ -43,6 +47,7 @@ GameState.prototype.create = function() {
 
     this.theme = this.game.add.audio('theme');
     meow = this.game.add.audio('meow');
+    trill = this.game.add.audio('trill');
     // Loop theme forever
     this.theme.loopFull(0.5);
 
@@ -53,24 +58,36 @@ GameState.prototype.create = function() {
     pause_btn.onDown.add(this.togglePause, this);
 
     // Add ammo tracker
-    var tile = this.game.add.image(10, 10, 'tile');
-    tile.scale.setTo(2, 1);
+    var yarnTile = this.game.add.image(10, 10, 'tile');
+    yarnTile.scale.setTo(2, 1);
 
-    var icon = this.game.add.image(20, 20, 'yarn');
-    icon.scale.setTo(.8, .8);
+    var yarnIcon = this.game.add.image(20, 20, 'yarn');
+    yarnIcon.scale.setTo(.8, .8);
 
     ammocount = this.MAX_YARN;
     ammotext = this.game.add.text(90, 30, this.ammocount);
+
+    // Add ammo tracker
+    var healthTile = this.game.add.image(120, 10, 'tile');
+    healthTile.scale.setTo(2, 1);
+
+    this.healthIcon = this.game.add.sprite(150, 10, 'heart');
+    this.healthIcon.animations.add('beat', [0, 1], 0.5, true, true);
+    this.healthIcon.scale.setTo(.8, .8);
+
+    this.healthText = this.game.add.text(230, 30, this.health);
 };
 
-GameState.prototype.update = function() {
+CatDefense.GameState.prototype.update = function() {
     ammotext.text = ammocount;
-    
+
+    this.healthIcon.animations.play('beat');
+
     // If there are fewer than MAX_CATS, launch a new one
     if (this.catGroup.countLiving() < this.MAX_CATS) {
         // Set the launch point to a random location past the right edge
         // of the stage
-        var newcat = this.launchCat(this.game.width - 100,
+        var newcat = this.launchCat(this.game.width - 100 + this.game.rnd.integerInRange(1, 200),
 			this.game.rnd.integerInRange(50, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
@@ -80,12 +97,12 @@ GameState.prototype.update = function() {
     this.game.physics.arcade.collide(this.catGroup, this.obstacleGroup);
 };
 
-GameState.prototype.togglePause = function() {
+CatDefense.GameState.prototype.togglePause = function() {
    if (game.physics.arcade.isPaused) {
-      this.text.destroy();
+      this.pauseText.destroy();
       game.physics.arcade.isPaused = false;
    } else {
-      this.text = game.add.text(game.world.centerX, game.world.centerY, "Pawsed", {
+      this.pauseText = game.add.text(game.world.centerX - 100, game.world.centerY, "Pawsed", {
         font: "65px Arial",
         fill: "#ffffff",
         align: "center"
@@ -94,7 +111,7 @@ GameState.prototype.togglePause = function() {
    }
 };
 
-GameState.prototype.launchCat = function(x, y) {
+CatDefense.GameState.prototype.launchCat = function(x, y) {
     // Get the first dead cat from the catGroup :'(
     var cat = this.catGroup.getFirstDead();
 
@@ -123,6 +140,17 @@ GameState.prototype.launchCat = function(x, y) {
 
     return cat;
 };
+
+CatDefense.GameState.prototype.loseHealth = function() {
+   this.health--;
+
+   this.healthText.setText(this.health);
+
+   if (this.health == 0) {
+      // endgame
+      this.togglePause();
+   }
+}
 
 var Cat = function (game, x, y) {
     var type = ['garfield',
@@ -168,6 +196,13 @@ Cat.prototype = Object.create(Phaser.Sprite.prototype);
 Cat.prototype.constructor = Cat;
 
 Cat.prototype.update = function() {
+    if (this.x < 100) {
+      trill.play();
+      this.kill();
+
+      this.game.state.states[this.game.state.current].loseHealth();
+    }
+
     this.animations.play('left');
 };
 
@@ -175,7 +210,7 @@ Cat.prototype.update = function() {
     Obstacles code
 */
 
-GameState.prototype.placeObstacle = function (sprite, pointer) {
+CatDefense.GameState.prototype.placeObstacle = function (sprite, pointer) {
     var x = pointer.x;
     var y = pointer.y;
     // Get the first dead cat from the catGroup :'(
@@ -224,5 +259,20 @@ var Obstacle = function (game, x, y) {
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
 Obstacle.prototype.constructor = Obstacle;
 
+// Start State
+CatDefense.StartState = function(game) {
+
+}
+
+// Endgame State
+// Pass win or loss boolean when starting the state, handle in init
+CatDefense.EndState = function(game) {
+
+}
+
+CatDefense.EndState.prototype.init = function() {
+
+}
+
 var game = new Phaser.Game(1024, 768, Phaser.AUTO, 'game');
-game.state.add('game', GameState, true);
+game.state.add('game', CatDefense.GameState, true);
