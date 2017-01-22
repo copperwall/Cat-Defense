@@ -101,16 +101,24 @@ var Cat = function (game, x, y) {
             'whitey'][game.rnd.integerInRange(0,3)];
 
     Phaser.Sprite.call(this, game, x, y, type);
+    this.health = [30,70,100][game.rnd.integerInRange(0,2)];
     this.animations.add('left', [0, 1], 2, true, true);
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
     this.body.onCollide = new Phaser.Signal();
     this.body.onCollide.add(function(me, other) {
-       console.log(me, other);
        meow.play();
-       me.damage(100);
+       me.damage(35);
        other.damage(50);
+
+       if (me.alive) {
+         var timer = game.time.create(false);
+         timer.add(500, function(cat) {
+            this.physics.arcade.moveToXY(cat, 0, this.width / 2);
+         }, game, me);
+         timer.start();
+       }
 
       // TODO:
       // When a cat collides with an obstacle, that obstacle should lose one
