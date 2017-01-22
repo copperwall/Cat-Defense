@@ -38,6 +38,9 @@ GameState.prototype.create = function() {
     meow = this.game.add.audio('meow');
     // Loop theme forever
     this.theme.loopFull(0.5);
+
+    var pause_btn = this.input.keyboard.addKey(27);
+    pause_btn.onDown.add(this.togglePause, this);
 };
 
 GameState.prototype.update = function() {
@@ -53,6 +56,20 @@ GameState.prototype.update = function() {
     }
 
     this.game.physics.arcade.collide(this.catGroup, this.obstacleGroup);
+};
+
+GameState.prototype.togglePause = function() {
+   if (game.physics.arcade.isPaused) {
+      this.text.destroy();
+      game.physics.arcade.isPaused = false;
+   } else {
+      this.text = game.add.text(game.world.centerX, game.world.centerY, "Paused", {
+        font: "65px Arial",
+        fill: "#ffffff",
+        align: "center"
+      });
+      game.physics.arcade.isPaused = true;
+   }
 };
 
 GameState.prototype.launchCat = function(x, y) {
