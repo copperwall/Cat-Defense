@@ -27,11 +27,9 @@ function create() {
 
     lanes = new Lanes(3, 650, 50);
 
-    cat = new Cat(game.width, game.height);
-    p = spawnPos(lanes, 0, cat);
+    p = spawnPos(lanes, 0, 'cat');
+    cat = new Cat(p);
     console.log(p);
-    cat.x = p.x;
-    cat.y = p.y;
 
     pointsText = game.add.text(game.width - 200, game.height - 70,
         points);
@@ -42,7 +40,7 @@ function update() {
     heart.animations.play('beating');
     cat.x -= 2;
     if(cat.x < 200) {
-        s = spawnPos(lanes, 0, cat);
+        s = spawnPos(lanes, 0, 'cat');
         cat.x = s.x;
         cat.y = s.y;
         points += 10;
@@ -78,11 +76,20 @@ function Lane() {
     return lane;
 }
 
-function spawnPos(lanes, laneNum, spawned) {
+/**
+ * spawnPos takes a group of lane sprites, an index, and a sprite name.
+ *
+ * @returns Phaser.Point A point that places the cat vertically in the laneNum
+ * given and horizontally in the spawning position for that lane.
+ */
+function spawnPos(lanes, laneNum, imageName) {
     var lane = lanes.getAt(0);
+    var image = game.cache.getImage(imageName);
+    console.log(image.height);
+
     return new Phaser.Point(lane.x + lane.width,
         lane.y + game.rnd.realInRange(0,10) + lanes.y
-        - spawned.height);
+        - (image.height * 0.75));
 }
 
 /*
@@ -103,7 +110,7 @@ function spawnPos(lanes, laneNum, spawned) {
         ...
         #. Speed 4 + #, HP 4 + #
 */
-function Cat(spawn) {
+function Cat(spawn, type, level) {
     var cat = game.add.sprite(spawn.x, spawn.y, 'cat');
     cat.animations.add('left', [0, 1], 2, true, true);
     cat.scale.setTo(.75,.75);
