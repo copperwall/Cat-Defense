@@ -61,17 +61,22 @@ GameState.prototype.launchCat = function(x, y) {
 };
 
 var Cat = function (game, x, y) {
-    Phaser.Sprite.call(this, game, x, y,
-        ['garfield',
-         'marie',
-         'mimi',
-         'whitey'][game.rnd.integerInRange(0,3)]);
+    type = ['garfield',
+            'marie',
+            'mimi',
+            'whitey'][game.rnd.integerInRange(0,3)];
+    Phaser.Sprite.call(this, game, x, y, type);
+    this.animations.add('left', [0,1], 2, true, true);
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 }
 
 Cat.prototype = Object.create(Phaser.Sprite.prototype);
 Cat.prototype.constructor = Cat;
+
+Cat.prototype.update = function() {
+    this.animations.play('left');
+};
 
 var game = new Phaser.Game(1200, 900, Phaser.AUTO, 'game');
 game.state.add('game', GameState, true);
