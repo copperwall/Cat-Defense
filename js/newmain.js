@@ -46,9 +46,21 @@ GameState.prototype.create = function() {
     // Setup pause button
     var pause_btn = this.input.keyboard.addKey(27);
     pause_btn.onDown.add(this.togglePause, this);
+
+    // Add ammo tracker
+    var tile = this.game.add.image(10, 10, 'tile');
+    tile.scale.setTo(2, 1);
+
+    var icon = this.game.add.image(20, 20, 'yarn');
+    icon.scale.setTo(.8, .8);
+
+    ammocount = 3
+    ammotext = this.game.add.text(90, 30, this.ammocount);
 };
 
 GameState.prototype.update = function() {
+    ammotext.text = ammocount;
+    
     // If there are fewer than MAX_CATS, launch a new one
     if (this.catGroup.countLiving() < this.MAX_CATS) {
         // Set the launch point to a random location past the right edge
@@ -183,14 +195,19 @@ GameState.prototype.placeObstacle = function (t) {
     obstacle.x = x;
     obstacle.y = y;
 
+    // Accounting
+    ammocount -= 1;
+
     return obstacle;
 }
 
 var Obstacle = function (game, x, y) {
-    console.log(x,y);
     Phaser.Sprite.call(this, game, x, y, 'yarn');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.immovable = true;
+    this.events.onKilled.add(function() {
+        ammocount += 1;
+    });
 }
 
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
