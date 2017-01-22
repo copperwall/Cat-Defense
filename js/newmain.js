@@ -23,6 +23,8 @@ GameState.prototype.create = function() {
 
     // Create a group to hold the missile
     this.catGroup = this.game.add.group();
+    this.target = game.add.sprite(0, 0, 'tile');
+    this.target.scale.setTo(1, this.game.height/this.target.height);
 };
 
 GameState.prototype.update = function() {
@@ -32,7 +34,7 @@ GameState.prototype.update = function() {
         // of the stage
         var newcat = this.launchCat(this.game.width - 100, 
 			this.game.rnd.integerInRange(50, this.game.height-50));
-		this.game.physics.arcade.moveToObject(newcat, target);
+		this.game.physics.arcade.moveToObject(newcat, this.target);
     }
 };
 
