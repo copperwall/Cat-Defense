@@ -5,6 +5,16 @@ CatDefense.GameState = function(game) {
         this.MAX_YARN = 2;
         this.catsLeft = 15;
         this.health = 3;
+        this.catTypes = [
+         // [name, health, speed],
+            ['garfield',    50, 110],
+            ['marie',       60, 100],
+            ['mimi',        70, 90],
+            ['calico',      80, 80],
+            ['fluff',       90, 70],
+            ['friday',      100, 60],
+            ['tabby',       110, 50],
+        ];
 };
 
 CatDefense.GameState.prototype.preload = function() {
@@ -16,10 +26,9 @@ CatDefense.GameState.prototype.preload = function() {
     this.game.load.image('yarn', 'assets/items/yarn.png');
 
     // Load cat assets
-    this.game.load.spritesheet('garfield', 'assets/cats/garfield-sprite.png', 100, 100);
-    this.game.load.spritesheet('marie', 'assets/cats/marie-sprite.png', 100, 100);
-    this.game.load.spritesheet('mimi', 'assets/cats/mimi-sprite.png', 100, 100);
-    this.game.load.spritesheet('whitey', 'assets/cats/whitey-sprite.png', 100, 100);
+    this.catTypes.forEach(function(elem, index, arr) {
+        this.game.load.spritesheet(elem[0], 'assets/cats/sprite-' + elem[0] + '.png', 100, 100);
+    });
 
     // Audio!
     this.game.load.audio('theme', 'assets/audio/theme.ogg');
@@ -91,6 +100,7 @@ CatDefense.GameState.prototype.update = function() {
 			this.game.rnd.integerInRange(50, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
+        //console.log(newcat);
         this.game.physics.arcade.moveToXY(newcat, 0, this.game.width / 2);
     }
 
@@ -129,6 +139,7 @@ CatDefense.GameState.prototype.launchCat = function(x, y) {
         }
     }
 
+
     // Revive the cat (set it's alive property to true)
     // You can also define a onRevived event handler in your cat objects
     // to do stuff when they are revived.
@@ -153,13 +164,14 @@ CatDefense.GameState.prototype.loseHealth = function() {
 }
 
 var Cat = function (game, x, y) {
-    var type = ['garfield',
-            'marie',
-            'mimi',
-            'whitey'][game.rnd.integerInRange(0,3)];
+    var state = CatDefense.getCurrentState();
+    var numTypes = state.catTypes.length;
+    var catType = state.catTypes[game.rnd.integerInRange(0,numTypes-1)];
+    console.log(catType);
 
-    Phaser.Sprite.call(this, game, x, y, type);
-    this.health = [30,70,100][game.rnd.integerInRange(0,2)];
+    Phaser.Sprite.call(this, game, x, y, catType[0]);
+    this.health = catType[1];
+    [[0,1],[1,0]][game.rnd.integerInRange(0,1)];
     this.animations.add('left', [0, 1], 2, true, true);
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -185,7 +197,7 @@ var Cat = function (game, x, y) {
       if (me.alive) {
          var timer = game.time.create(false);
          timer.add(500, function(cat) {
-            this.physics.arcade.moveToXY(cat, 0, this.width / 2);
+            this.physics.arcade.moveToXY(cat, 0, this.width / 2, catType[2]);
          }, game, me);
          timer.start();
       }
@@ -200,7 +212,7 @@ Cat.prototype.update = function() {
       trill.play();
       this.kill();
 
-      this.game.state.states[this.game.state.current].loseHealth();
+      CatDefense.getCurrentState().loseHealth();
     }
 
     this.animations.play('left');
@@ -272,6 +284,10 @@ CatDefense.EndState = function(game) {
 
 CatDefense.EndState.prototype.init = function() {
 
+}
+
+CatDefense.getCurrentState = function () {
+    return game.state.states[game.state.current];
 }
 
 var game = new Phaser.Game(1024, 768, Phaser.AUTO, 'game');
