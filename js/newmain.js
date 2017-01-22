@@ -100,7 +100,7 @@ CatDefense.GameState.prototype.update = function() {
 			this.game.rnd.integerInRange(50, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
-        this.game.physics.arcade.moveToXY(newcat, 0, this.game.width / 2);
+        newcat.setOnTarget();
     }
 
     this.game.physics.arcade.collide(this.catGroup, this.obstacleGroup);
@@ -166,6 +166,7 @@ var Cat = function (game, x, y) {
     var state = CatDefense.getCurrentState();
     var numTypes = state.catTypes.length;
     var catType = state.catTypes[game.rnd.integerInRange(0,numTypes-1)];
+    this.catType = catType;
 
     Phaser.Sprite.call(this, game, x, y, catType[0]);
     this.health = catType[1];
@@ -195,7 +196,7 @@ var Cat = function (game, x, y) {
       if (me.alive) {
          var timer = game.time.create(false);
          timer.add(500, function(cat) {
-            this.physics.arcade.moveToXY(cat, 0, this.width / 2, catType[2]);
+            cat.setOnTarget();
          }, game, me);
          timer.start();
       }
@@ -204,6 +205,11 @@ var Cat = function (game, x, y) {
 
 Cat.prototype = Object.create(Phaser.Sprite.prototype);
 Cat.prototype.constructor = Cat;
+
+Cat.prototype.setOnTarget = function () {
+    var game = CatDefense.getCurrentState().game;
+    game.physics.arcade.moveToXY(this, 0, game.width / 2, this.catType[2]);
+}
 
 Cat.prototype.update = function() {
     if (this.x < 100) {
