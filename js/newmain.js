@@ -23,10 +23,12 @@ GameState.prototype.create = function() {
 
     // Create a group to hold the cat
     this.catGroup = this.game.add.group();
+    this.obstacleGroup = this.game.add.group();
+
     this.target = game.add.sprite(0, 0, 'tile');
     this.target.scale.setTo(1, this.game.height/this.target.height);
 
-    game.input.onDown.add(this.placeObstacle, this, 0, game.input.activePointer.x, game.input.activePointer.y);
+    game.input.onDown.add(this.placeObstacle, this, 0, this);
 
 };
 
@@ -90,20 +92,39 @@ Cat.prototype.update = function() {
     Obstacles code
 */
 
-GameState.prototype.placeObstacle = function (x, y) {
-    
+GameState.prototype.placeObstacle = function (t) {
+    console.log(t.x, t.y);
+    x = t.x;
+    y = t.y;
+    // Get the first dead cat from the catGroup :'(
+    var obstacle = this.obstacleGroup.getFirstDead();
+
+    // If there aren't any available, create a new one
+    if (obstacle === null) {
+        obstacle = new Obstacle(this.game);
+        this.obstacleGroup.add(obstacle);
+    }
+
+    // Revive the cat (set it's alive property to true)
+    // You can also define a onRevived event handler in your cat objects
+    // to do stuff when they are revived.
+    obstacle.revive();
+
+    // Move the cat to the given coordinates
+    obstacle.x = x;
+    obstacle.y = y;
+
+    return obstacle;
 }
 
 var Obstacle = function (game, x, y) {
-    Phaser.sprite.call(this, game, x, y, 'yarn');
+    console.log(x,y);
+    Phaser.Sprite.call(this, game, x, y, 'yarn');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 }
 
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
 Obstacle.prototype.constructor = Obstacle;
-
-
-
 
 var game = new Phaser.Game(1200, 900, Phaser.AUTO, 'game');
 game.state.add('game', GameState, true);
