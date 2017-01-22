@@ -8,7 +8,7 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('heart', 'assets/env/heart-sprite.png');
 
     // Load items assets
-    this.game.load.image('yarn', 'assets/items/yarn-small.jpg');
+    this.game.load.image('yarn', 'assets/items/yarn.png');
 
     // Load cat assets
     this.game.load.spritesheet('garfield', 'assets/cats/garfield-sprite.png', 100, 100);
@@ -28,11 +28,13 @@ GameState.prototype.create = function() {
     // Set stage background to something sky colored
     this.game.stage.backgroundColor = 0x4488cc;
 
+    this.game.add.image(0, 0, 'background');
+
     // Create a group to hold the cat
     this.catGroup = this.game.add.group();
     this.obstacleGroup = this.game.add.group();
 
-    this.target = game.add.sprite(0, 0, 'tile');
+    this.target = game.add.sprite(10, 0, 'tile');
     this.target.scale.setTo(1, this.game.height/this.target.height);
 
     game.input.onDown.add(this.placeObstacle, this, 0, this);
@@ -160,5 +162,5 @@ var Obstacle = function (game, x, y) {
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
 Obstacle.prototype.constructor = Obstacle;
 
-var game = new Phaser.Game(1200, 900, Phaser.AUTO, 'game');
+var game = new Phaser.Game(1024, 768, Phaser.AUTO, 'game');
 game.state.add('game', GameState, true);
