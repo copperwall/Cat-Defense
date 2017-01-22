@@ -5,6 +5,7 @@ function preload() {
     game.load.image('room', 'assets/bare-room.jpg');
     game.load.image('rug', 'assets/rug.png');
     game.load.image('spawner', 'assets/spawner.png');
+    game.load.image('yarn', 'assets/yarn.jpg');
 
     game.load.spritesheet('heart-beat', 'assets/heart-sprite.png', 100, 100);
     game.load.spritesheet('cat', 'assets/catwalk1.png', 100, 100); 
@@ -14,7 +15,7 @@ function preload() {
 function create() {
     points = 0;
     
-    room = game.add.sprite(0,0, 'room');
+    room = game.add.sprite(0, 0, 'room');
     room.width = 800;
     room.height = 600;
 
@@ -24,10 +25,14 @@ function create() {
     
     points = 1;
     
-    lanes = Lanes(5, 650, 50);
+    lanes = Lanes(3, 650, 50);
 
-    cat = Cat(spawnPos(lanes.getAt(0)));
-
+    cat = Cat(game.width, game.height);
+    p = spawnPos(lanes, 0, cat);
+    console.log(p);
+    cat.x = p.x;
+    cat.y = p.y;
+    
     pointsText = game.add.text(game.width - 200, game.height - 70,
         points);
 }
@@ -37,9 +42,9 @@ function update() {
     heart.animations.play('beating');
     cat.x -= 2;
     if(cat.x < 200) {
-        s = spawnPos(lanes.getAt(0));
-        cat.x = s.x
-        cat.y = s.y
+        s = spawnPos(lanes, 0, cat);
+        cat.x = s.x;
+        cat.y = s.y;
         points += 10;
         pointsText.text = points;
     }
@@ -55,7 +60,7 @@ function Lanes(numLanes, laneWidth, laneHeight) {
     for(var i = 0; i < numLanes; i++) {
         lanes.add(Lane());
     }
-    //lanes.createMultiple(numLanes, 'rug', 0, true);
+
     lanes.setAll('width', laneWidth);
     lanes.setAll('height', laneHeight);
     console.log(lanes.align(1, numLanes, laneWidth, laneHeight, Phaser.TOP_CENTER));
@@ -73,9 +78,11 @@ function Lane() {
     return lane;
 }
 
-function spawnPos(lane) {
+function spawnPos(lanes, laneNum, spawned) {
+    lane = lanes.getAt(0);
     return new Phaser.Point(lane.x + lane.width,
-        lane.y + game.rnd.realInRange(0,50));
+        lane.y + game.rnd.realInRange(0,10) + lanes.y
+        - spawned.height);
 }
 
 /*
@@ -98,22 +105,9 @@ function spawnPos(lane) {
 */
 function Cat(spawn) {
 
-    //lane = lanes[game.rnd.realInRange(0, 4)];
-    //spawn = lane.spawner.spawnPos();
     cat = game.add.sprite(spawn.x, spawn.y, 'cat');
     cat.animations.add('left', [0, 1], 2, true, true);
     cat.scale.setTo(.75,.75);
-
-    /*cat.catProps = {
-
-        // from constructorparams
-        "type": type, 
-        "level": level,
-
-        // randomly assigned in constructor
-        "lane": lane,
-
-    };*/
 
     return cat;
 }
