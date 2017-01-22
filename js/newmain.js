@@ -30,11 +30,16 @@ GameState.prototype.create = function() {
     // Set stage background
     this.game.add.image(0, 0, 'background');
 
+    // Make transparent sprite for detecting mouse click
+    clickablebg = this.game.add.sprite(0, 0);
+    clickablebg.scale.setTo(game.width/clickablebg.width, game.height/clickablebg.height);
+    clickablebg.inputEnabled = true;
+    clickablebg.input.priorityID = 0;
+    clickablebg.events.onInputDown.add(this.placeObstacle, this, 0, this);
+
     // Create a group to hold the cat
     this.catGroup = this.game.add.group();
     this.obstacleGroup = this.game.add.group();
-
-    game.input.onDown.add(this.placeObstacle, this, 0, this);
 
     this.theme = this.game.add.audio('theme');
     meow = this.game.add.audio('meow');
@@ -170,9 +175,9 @@ Cat.prototype.update = function() {
     Obstacles code
 */
 
-GameState.prototype.placeObstacle = function (t) {
-    var x = t.x;
-    var y = t.y;
+GameState.prototype.placeObstacle = function (sprite, pointer) {
+    var x = pointer.x;
+    var y = pointer.y;
     // Get the first dead cat from the catGroup :'(
     var obstacle = this.obstacleGroup.getFirstDead();
 
@@ -208,6 +213,12 @@ var Obstacle = function (game, x, y) {
     this.events.onKilled.add(function() {
         ammocount += 1;
     });
+    this.inputEnabled = true;
+    this.input.priorityID = 1;
+    this.events.onInputDown.add(function (elem) {
+        elem.kill();
+    }, this);
+    this.anchor = new Phaser.Point(.5,.5);
 }
 
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
