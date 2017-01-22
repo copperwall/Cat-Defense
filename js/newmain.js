@@ -100,7 +100,6 @@ CatDefense.GameState.prototype.update = function() {
 			this.game.rnd.integerInRange(50, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
-        //console.log(newcat);
         this.game.physics.arcade.moveToXY(newcat, 0, this.game.width / 2);
     }
 
@@ -167,7 +166,6 @@ var Cat = function (game, x, y) {
     var state = CatDefense.getCurrentState();
     var numTypes = state.catTypes.length;
     var catType = state.catTypes[game.rnd.integerInRange(0,numTypes-1)];
-    console.log(catType);
 
     Phaser.Sprite.call(this, game, x, y, catType[0]);
     this.health = catType[1];
