@@ -59,7 +59,7 @@ GameState.prototype.create = function() {
     var icon = this.game.add.image(20, 20, 'yarn');
     icon.scale.setTo(.8, .8);
 
-    ammocount = 3
+    ammocount = this.MAX_YARN;
     ammotext = this.game.add.text(90, 30, this.ammocount);
 };
 
