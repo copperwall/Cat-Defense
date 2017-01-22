@@ -21,25 +21,27 @@ GameState.prototype.create = function() {
     // Set stage background to something sky colored
     this.game.stage.backgroundColor = 0x4488cc;
 
-    // Create a group to hold the missile
+    // Create a group to hold the cat
     this.catGroup = this.game.add.group();
     this.target = game.add.sprite(0, 0, 'tile');
     this.target.scale.setTo(1, this.game.height/this.target.height);
 };
 
 GameState.prototype.update = function() {
-    // If there are fewer than MAX_MISSILES, launch a new one
+    // If there are fewer than MAX_CATS, launch a new one
     if (this.catGroup.countLiving() < this.MAX_CATS) {
-        // Set the launch point to a random location below the bottom edge
+        // Set the launch point to a random location past the right edge
         // of the stage
         var newcat = this.launchCat(this.game.width - 100, 
 			this.game.rnd.integerInRange(50, this.game.height-50));
-		this.game.physics.arcade.moveToObject(newcat, this.target);
+
+        // Move cat to the center of the left edge of the stage
+        this.game.physics.arcade.moveToXY(newcat, 0, this.game.width / 2);
     }
 };
 
 GameState.prototype.launchCat = function(x, y) {
-    // // Get the first dead missile from the missileGroup
+    // Get the first dead cat from the catGroup :'(
     var cat = this.catGroup.getFirstDead();
 
     // If there aren't any available, create a new one
@@ -48,12 +50,12 @@ GameState.prototype.launchCat = function(x, y) {
         this.catGroup.add(cat);
     }
 
-    // Revive the missile (set it's alive property to true)
-    // You can also define a onRevived event handler in your explosion objects
+    // Revive the cat (set it's alive property to true)
+    // You can also define a onRevived event handler in your cat objects
     // to do stuff when they are revived.
     cat.revive();
 
-    // Move the missile to the given coordinates
+    // Move the cat to the given coordinates
     cat.x = x;
     cat.y = y;
 
@@ -61,10 +63,11 @@ GameState.prototype.launchCat = function(x, y) {
 };
 
 var Cat = function (game, x, y) {
-    type = ['garfield',
+    var type = ['garfield',
             'marie',
             'mimi',
             'whitey'][game.rnd.integerInRange(0,3)];
+
     Phaser.Sprite.call(this, game, x, y, type);
     this.animations.add('left', [0,1], 2, true, true);
 
