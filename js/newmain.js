@@ -171,8 +171,8 @@ var Cat = function (game, x, y) {
 
     Phaser.Sprite.call(this, game, x, y, catType[0]);
     this.health = catType[1];
-    [[0,1],[1,0]][game.rnd.integerInRange(0,1)];
-    this.animations.add('left', [0, 1], 2, true, true);
+    var step = [[0,1],[1,0]][game.rnd.integerInRange(0,1)];
+    this.animations.add('left', step, 2, true, true);
 
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
