@@ -49,7 +49,7 @@ CatDefense.GameState.prototype.create = function() {
     meow = this.game.add.audio('meow');
     trill = this.game.add.audio('trill');
     // Loop theme forever
-    this.theme.loopFull(0.5);
+    this.theme.loopFull(0.1);
 
     this.catsLeftText = this.game.add.text(this.game.width - 270, 20, "Cats left: " + this.catsLeft);
 
