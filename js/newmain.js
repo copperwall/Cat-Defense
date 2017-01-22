@@ -136,7 +136,7 @@ CatDefense.GameState.prototype.launchCat = function(x, y) {
         if (this.catsLeft == 0) {
             // End game
             this.theme.stop();
-            this.state.start('end');
+            this.state.start('end', true, false, 'win');
         }
     }
 
@@ -161,7 +161,7 @@ CatDefense.GameState.prototype.loseHealth = function() {
    if (this.health == 0) {
       // endgame
       this.theme.stop();
-      this.state.start('end');
+      this.state.start('end', true, false, 'lose');
    }
 }
 
