@@ -7,10 +7,13 @@ CatDefense.GameState = function(game) {
         this.health = 3;
         this.catTypes = [
          // [name, health, speed],
-            ['garfield', 30, 120],
-            ['marie', 50, 90],
-            ['mimi', 70, 60],
-            ['whitey', 90, 30]
+            ['garfield',    50, 110],
+            ['marie',       60, 100],
+            ['mimi',        70, 90],
+            ['calico',      80, 80],
+            ['fluff',       90, 70],
+            ['friday',      100, 60],
+            ['tabby',       110, 50],
         ];
 };
 
@@ -24,7 +27,7 @@ CatDefense.GameState.prototype.preload = function() {
 
     // Load cat assets
     this.catTypes.forEach(function(elem, index, arr) {
-        this.game.load.spritesheet(elem[0], 'assets/cats/' + elem[0] + '-sprite.png', 100, 100);
+        this.game.load.spritesheet(elem[0], 'assets/cats/sprite-' + elem[0] + '.png', 100, 100);
     });
 
     // Audio!
