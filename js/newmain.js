@@ -1,5 +1,6 @@
 var GameState = function(game) {
         this.MAX_CATS = 3; // number of cats
+        this.catsLeft = 5;
 };
 
 GameState.prototype.preload = function() {
@@ -39,6 +40,9 @@ GameState.prototype.create = function() {
     // Loop theme forever
     this.theme.loopFull(0.5);
 
+    this.catsLeftText = this.game.add.text(this.game.width - 270, 20, "Cats left: " + this.catsLeft);
+
+    // Setup pause button
     var pause_btn = this.input.keyboard.addKey(27);
     pause_btn.onDown.add(this.togglePause, this);
 };
@@ -80,6 +84,14 @@ GameState.prototype.launchCat = function(x, y) {
     if (cat === null) {
         cat = new Cat(this.game);
         this.catGroup.add(cat);
+    } else {
+        this.catsLeft--;
+        this.catsLeftText.setText("Cats Left: " + this.catsLeft);
+
+        if (this.catsLeft == 0) {
+            // End game
+            this.togglePause();
+        }
     }
 
     // Revive the cat (set it's alive property to true)
@@ -108,19 +120,6 @@ var Cat = function (game, x, y) {
 
     this.body.onCollide = new Phaser.Signal();
     this.body.onCollide.add(function(me, other) {
-       meow.play();
-       me.damage(35);
-       other.damage(50);
-
-       if (me.alive) {
-         var timer = game.time.create(false);
-         timer.add(500, function(cat) {
-            this.physics.arcade.moveToXY(cat, 0, this.width / 2);
-         }, game, me);
-         timer.start();
-       }
-
-      // TODO:
       // When a cat collides with an obstacle, that obstacle should lose one
       // hit point and the cat should lose one hit point.
       //
@@ -133,6 +132,17 @@ var Cat = function (game, x, y) {
       //
       // If the cat survives and obstacle dies, the cat should begin moving
       // back to the target.
+      meow.play();
+      me.damage(35);
+      other.damage(50);
+
+      if (me.alive) {
+         var timer = game.time.create(false);
+         timer.add(500, function(cat) {
+            this.physics.arcade.moveToXY(cat, 0, this.width / 2);
+         }, game, me);
+         timer.start();
+      }
     });
 }
 
