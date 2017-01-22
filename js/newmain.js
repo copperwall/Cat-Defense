@@ -25,6 +25,9 @@ GameState.prototype.create = function() {
     this.catGroup = this.game.add.group();
     this.target = game.add.sprite(0, 0, 'tile');
     this.target.scale.setTo(1, this.game.height/this.target.height);
+
+    game.input.onDown.add(this.placeObstacle, this, 0, game.input.activePointer.x, game.input.activePointer.y);
+
 };
 
 GameState.prototype.update = function() {
@@ -36,6 +39,8 @@ GameState.prototype.update = function() {
 			this.game.rnd.integerInRange(50, this.game.height-50));
 		this.game.physics.arcade.moveToObject(newcat, this.target);
     }
+
+
 };
 
 GameState.prototype.launchCat = function(x, y) {
@@ -66,7 +71,7 @@ var Cat = function (game, x, y) {
             'mimi',
             'whitey'][game.rnd.integerInRange(0,3)];
     Phaser.Sprite.call(this, game, x, y, type);
-    this.animations.add('left', [0,1], 2, true, true);
+    this.animations.add('left', [0, 1], 2, true, true);
 
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
 }
@@ -77,6 +82,25 @@ Cat.prototype.constructor = Cat;
 Cat.prototype.update = function() {
     this.animations.play('left');
 };
+
+/*
+    Obstacles code
+*/
+
+GameState.prototype.placeObstacle = function (x, y) {
+    
+}
+
+var Obstacle = function (game, x, y) {
+    Phaser.sprite.call(this, game, x, y, 'yarn');
+    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+}
+
+Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
+Obstacle.prototype.constructor = Obstacle;
+
+
+
 
 var game = new Phaser.Game(1200, 900, Phaser.AUTO, 'game');
 game.state.add('game', GameState, true);
