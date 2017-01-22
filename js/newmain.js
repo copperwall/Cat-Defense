@@ -24,13 +24,13 @@ CatDefense.GameState.prototype.preload = function() {
     this.game.load.image('yarn', 'assets/items/yarn.png');
 
     // Load cat assets
-    this.catTypes.forEach(function(elem, index, arr) {
+    this.catTypes.forEach(function(elem) {
         this.game.load.spritesheet(elem[0], 'assets/cats/sprite-' + elem[0] + '.png', 100, 100);
+        this.game.load.audio(elem[0], 'assets/audio/' + elem[0] + '.ogg');
     });
 
     // Audio!
     this.game.load.audio('theme', 'assets/audio/theme.ogg');
-    this.game.load.audio('meow', 'assets/audio/meow.ogg');
     this.game.load.audio('trill', 'assets/audio/trill.ogg');
 
     // Background!
@@ -56,7 +56,12 @@ CatDefense.GameState.prototype.create = function() {
     this.obstacleGroup = this.game.add.group();
 
     this.theme = this.game.add.audio('theme');
-    meow = this.game.add.audio('meow');
+
+    this.meows = {};
+    this.catTypes.forEach(function(cat) {
+      this.meows[cat[0]] = game.add.audio(cat[0]);
+    }.bind(this));
+
     trill = this.game.add.audio('trill');
     // Loop theme forever
     this.theme.loopFull(0.1);
@@ -192,7 +197,7 @@ var Cat = function (game, x, y) {
       //
       // If the cat survives and obstacle dies, the cat should begin moving
       // back to the target.
-      meow.play();
+      me.meow();
       me.damage(35);
       other.damage(50);
 
@@ -212,6 +217,12 @@ Cat.prototype.constructor = Cat;
 Cat.prototype.setOnTarget = function () {
     var game = CatDefense.getCurrentState().game;
     game.physics.arcade.moveToXY(this, 0, game.width / 2, this.catType[2]);
+}
+
+Cat.prototype.meow = function() {
+   var typeName = this.catType[0];
+   var meows = CatDefense.getCurrentState().meows;
+   meows[typeName].play();
 }
 
 Cat.prototype.update = function() {
