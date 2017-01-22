@@ -25,17 +25,12 @@ GameState.prototype.preload = function() {
 };
 
 GameState.prototype.create = function() {
-    // Set stage background to something sky colored
-    this.game.stage.backgroundColor = 0x4488cc;
-
+    // Set stage background
     this.game.add.image(0, 0, 'background');
 
     // Create a group to hold the cat
     this.catGroup = this.game.add.group();
     this.obstacleGroup = this.game.add.group();
-
-    this.target = game.add.sprite(10, 0, 'tile');
-    this.target.scale.setTo(1, this.game.height/this.target.height);
 
     game.input.onDown.add(this.placeObstacle, this, 0, this);
 
