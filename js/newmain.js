@@ -15,6 +15,13 @@ GameState.prototype.preload = function() {
     this.game.load.spritesheet('marie', 'assets/cats/marie-sprite.png', 100, 100);
     this.game.load.spritesheet('mimi', 'assets/cats/mimi-sprite.png', 100, 100);
     this.game.load.spritesheet('whitey', 'assets/cats/whitey-sprite.png', 100, 100);
+
+    // Audio!
+    this.game.load.audio('theme', 'assets/theme.ogg');
+    this.game.load.audio('meow', 'assets/meow.ogg');
+
+    // Background!
+    this.game.load.image('background', 'assets/background.jpg');
 };
 
 GameState.prototype.create = function() {
@@ -30,6 +37,10 @@ GameState.prototype.create = function() {
 
     game.input.onDown.add(this.placeObstacle, this, 0, this);
 
+    this.theme = this.game.add.audio('theme');
+    meow = this.game.add.audio('meow');
+    // Loop theme forever
+    this.theme.loopFull(0.5);
 };
 
 GameState.prototype.update = function() {
@@ -44,7 +55,7 @@ GameState.prototype.update = function() {
         this.game.physics.arcade.moveToXY(newcat, 0, this.game.width / 2);
     }
 
-
+    this.game.physics.arcade.collide(this.catGroup, this.obstacleGroup);
 };
 
 GameState.prototype.launchCat = function(x, y) {
@@ -78,10 +89,15 @@ var Cat = function (game, x, y) {
     Phaser.Sprite.call(this, game, x, y, type);
     this.animations.add('left', [0, 1], 2, true, true);
 
-    this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    game.physics.enable(this, Phaser.Physics.ARCADE);
 
     this.body.onCollide = new Phaser.Signal();
     this.body.onCollide.add(function(me, other) {
+       console.log(me, other);
+       meow.play();
+       me.damage(100);
+       other.damage(50);
+
       // TODO:
       // When a cat collides with an obstacle, that obstacle should lose one
       // hit point and the cat should lose one hit point.
@@ -138,6 +154,7 @@ var Obstacle = function (game, x, y) {
     console.log(x,y);
     Phaser.Sprite.call(this, game, x, y, 'yarn');
     this.game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.immovable = true;
 }
 
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
