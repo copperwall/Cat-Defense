@@ -85,7 +85,7 @@ GameState.prototype.togglePause = function() {
       this.text.destroy();
       game.physics.arcade.isPaused = false;
    } else {
-      this.text = game.add.text(game.world.centerX, game.world.centerY, "Paused", {
+      this.text = game.add.text(game.world.centerX, game.world.centerY, "Pawsed", {
         font: "65px Arial",
         fill: "#ffffff",
         align: "center"
