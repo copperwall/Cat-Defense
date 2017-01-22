@@ -1,5 +1,3 @@
-var CatDefense = {};
-
 CatDefense.GameState = function(game) {
         this.MAX_CATS = 5; // number of cats
         this.MAX_YARN = 2;
@@ -42,6 +40,9 @@ CatDefense.GameState.prototype.preload = function() {
 CatDefense.GameState.prototype.create = function() {
     // Set stage background
     this.game.add.image(0, 0, 'background');
+
+    this.catsLeft = 15;
+    this.health = 3;
 
     // Make transparent sprite for detecting mouse click
     clickablebg = this.game.add.sprite(0, 0);
@@ -134,7 +135,8 @@ CatDefense.GameState.prototype.launchCat = function(x, y) {
 
         if (this.catsLeft == 0) {
             // End game
-            this.togglePause();
+            this.theme.stop();
+            this.state.start('end');
         }
     }
 
@@ -158,7 +160,8 @@ CatDefense.GameState.prototype.loseHealth = function() {
 
    if (this.health == 0) {
       // endgame
-      this.togglePause();
+      this.theme.stop();
+      this.state.start('end');
    }
 }
 
@@ -269,24 +272,13 @@ var Obstacle = function (game, x, y) {
 Obstacle.prototype = Object.create(Phaser.Sprite.prototype);
 Obstacle.prototype.constructor = Obstacle;
 
-// Start State
-CatDefense.StartState = function(game) {
-
-}
-
-// Endgame State
-// Pass win or loss boolean when starting the state, handle in init
-CatDefense.EndState = function(game) {
-
-}
-
-CatDefense.EndState.prototype.init = function() {
-
-}
-
 CatDefense.getCurrentState = function () {
     return game.state.states[game.state.current];
 }
 
 var game = new Phaser.Game(1024, 768, Phaser.AUTO, 'game');
-game.state.add('game', CatDefense.GameState, true);
+game.state.add('start', CatDefense.StartState);
+game.state.add('game', CatDefense.GameState);
+game.state.add('end', CatDefense.EndState);
+
+game.state.start('start');
