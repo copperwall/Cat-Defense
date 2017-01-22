@@ -1,7 +1,7 @@
 var GameState = function(game) {
-        this.MAX_CATS = 3; // number of cats
-        this.MAX_YARN = 3;
-        this.catsLeft = 5;
+        this.MAX_CATS = 5; // number of cats
+        this.MAX_YARN = 2;
+        this.catsLeft = 15;
 };
 
 GameState.prototype.preload = function() {
