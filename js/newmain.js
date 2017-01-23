@@ -199,7 +199,8 @@ var Cat = function (game, x, y) {
       // If the cat survives and obstacle dies, the cat should begin moving
       // back to the target.
       me.walking = false;
-      meow.play();
+      meows = CatDefense.getCurrentState().meows;
+      meows[me.catType[0]].play();
       me.damage(35);
       other.damage(50);
 
