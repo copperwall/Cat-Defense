@@ -143,6 +143,7 @@ CatDefense.GameState.prototype.launchCat = function(x, y) {
     // You can also define a onRevived event handler in your cat objects
     // to do stuff when they are revived.
     cat.revive();
+    cat.walking = true;
 
     // Move the cat to the given coordinates
     cat.x = x;
@@ -172,7 +173,7 @@ var Cat = function (game, x, y) {
     this.health = catType[1];
     var step = [[0,1],[1,0]][game.rnd.integerInRange(0,1)];
     this.animations.add('left', step, 2, true, true);
-
+    this.animations.add('meow', [2,1,2,1], 5, false, true);
     game.physics.enable(this, Phaser.Physics.ARCADE);
 
     this.body.onCollide = new Phaser.Signal();
@@ -189,6 +190,7 @@ var Cat = function (game, x, y) {
       //
       // If the cat survives and obstacle dies, the cat should begin moving
       // back to the target.
+      me.walking = false;
       meow.play();
       me.damage(35);
       other.damage(50);
@@ -197,6 +199,7 @@ var Cat = function (game, x, y) {
          var timer = game.time.create(false);
          timer.add(500, function(cat) {
             cat.setOnTarget();
+            cat.walking = true;
          }, game, me);
          timer.start();
       }
@@ -218,8 +221,10 @@ Cat.prototype.update = function() {
 
       CatDefense.getCurrentState().loseHealth();
     }
-
-    this.animations.play('left');
+    if(this.walking)
+        this.play('left');
+    else
+        this.play('meow');
 };
 
 /*
