@@ -103,7 +103,7 @@ CatDefense.GameState.prototype.update = function() {
         // Set the launch point to a random location past the right edge
         // of the stage
         var newcat = this.launchCat(this.game.width - 100 + this.game.rnd.integerInRange(1, 200),
-			this.game.rnd.integerInRange(50, this.game.height-50));
+			this.game.rnd.integerInRange(300, this.game.height-50));
 
         // Move cat to the center of the left edge of the stage
         newcat.setOnTarget();
